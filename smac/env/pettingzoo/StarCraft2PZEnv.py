@@ -34,7 +34,7 @@ def make_env(raw_env):
 
 
 class smac_parallel_env(ParallelEnv):
-    def __init__(self, env, max_cycles):
+    def __init__(self, env: StarCraft2Env, max_cycles):
         self.max_cycles = max_cycles
         self.env = env
         self.env.reset()
@@ -177,6 +177,14 @@ class smac_parallel_env(ParallelEnv):
         return terminations, truncations
 
     def step(self, all_actions):
+        """
+        atr:
+        1. all_actions: 外部算法输入的动作
+        - 当action=None时，将action_list[agent_id]=0
+        2. action_list: env实际运行的动作
+        - action_list[n]=0时，env中对应的agent会直接不动
+        (no-op (valid only when dead))
+        """
         action_list = [0] * self.env.n_agents
         for agent in self.agents:
             agent_id = self.get_agent_smac_id(agent)

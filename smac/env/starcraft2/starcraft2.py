@@ -450,7 +450,16 @@ class StarCraft2Env(MultiAgentEnv):
         self.force_restarts += 1
 
     def step(self, actions):
-        """A single environment step. Returns reward, terminated, info."""
+        """
+        A single environment step. Returns reward, terminated, info.
+
+        atr:
+        1. actions_int: 由输入的actions转换而来
+        - 输入None，会报错，因此该环境不能传入None
+        (pettingzoo除外)
+        2. terminated: 只有一个terminated，只有当
+        游戏结束，或者超出回合限制时，会置True
+        """
         actions_int = [int(a) for a in actions]
 
         self.last_action = np.eye(self.n_actions)[np.array(actions_int)]
@@ -1422,7 +1431,13 @@ class StarCraft2Env(MultiAgentEnv):
         return type_id
 
     def get_avail_agent_actions(self, agent_id):
-        """Returns the available actions for agent_id."""
+        """
+        Returns the available actions for agent_id.
+        
+        atr:
+        1. avail_actions: 允许的动作
+        - 每一位0代表不允许，1代表允许
+        """
         unit = self.get_unit_by_id(agent_id)
         if unit.health > 0:
             # cannot choose no-op when alive
@@ -1468,7 +1483,13 @@ class StarCraft2Env(MultiAgentEnv):
             return [1] + [0] * (self.n_actions - 1)
 
     def get_avail_actions(self):
-        """Returns the available actions of all agents in a list."""
+        """
+        Returns the available actions of all agents in a list.
+        返回agents所有允许的动作
+
+        atr:
+        1. get_avail_agent_actions: 为每一个agent设置允许的动作
+        """
         avail_actions = []
         for agent_id in range(self.n_agents):
             avail_agent = self.get_avail_agent_actions(agent_id)
